@@ -63,7 +63,7 @@ FROM coviddeaths
 WHERE continent != '' AND continent IS NOT NULL
 GROUP BY continent, location )
 SELECT 
-	continent, 
+    continent, 
     SUM(population) total_pop, 
     SUM(total_case) total_case, 
     SUM(total_death) total_death, 
@@ -106,8 +106,8 @@ ORDER BY 2 DESC, 3 DESC
 -- Daily vaccination and Percentage vaccination in each day
 WITH cte_join(continent, location, record_date, population, total_vaccinations, people_fully_vaccinated)  AS (
 SELECT 
-	dea.continent,
-	dea.location,
+    dea.continent,
+    dea.location,
     dea.date,
     dea.population,
     CAST(vac.total_vaccinations AS FLOAT),
@@ -119,7 +119,7 @@ JOIN CovidVaccinations AS vac
 , cte_agg AS
 (
 SELECT 
-	  continent, 
+    continent, 
     record_date, 
     SUM(population) AS Pop, 
     SUM(total_vaccinations) AS TotalVaccinated, 
@@ -139,8 +139,8 @@ FROM cte_agg
 -- Average %vaccination in each continent
 WITH cte_join(continent, location, record_date, population, total_vaccinations, people_fully_vaccinated)  AS (
 SELECT 
-	dea.continent,
-	dea.location,
+    dea.continent,
+    dea.location,
     dea.date,
     dea.population,
     CAST(vac.total_vaccinations AS FLOAT),
@@ -155,7 +155,7 @@ FROM cte_join
 WHERE continent is NOT NULL AND continent <> ''
 GROUP BY continent, location)
 SELECT 
-	continent, 
+    continent, 
     SUM(populations) AS Population, 
     SUM(total_vaccinations) AS Total_vaccination, 
     AVG(VaccinationPerPop) AS AvgVaccinationPerPop
