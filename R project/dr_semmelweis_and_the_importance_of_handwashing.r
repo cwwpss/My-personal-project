@@ -13,11 +13,12 @@ head(monthly)
 
 # Add proportion of deaths column
 yearly <- yearly %>%
-			mutate(proportion_deaths = deaths / births)
-yearly
+	mutate(proportion_deaths = deaths / births)
+print(yearly)
+
 monthly <- monthly %>%
-			mutate(proportion_deaths = deaths / births)
-monthly
+	mutate(proportion_deaths = deaths / births)
+print(monthly)
 
 # create chart for yearly and monthly
 ggplot(yearly, aes(x = year , y =proportion_deaths, color = clinic)) +
@@ -34,13 +35,11 @@ monthly <- monthly %>%
 	mutate(handwashing_started = date >= handwashing_start)
 monthly 
 
-ggplot(monthly, aes(x = date, 
-					y = proportion_deaths, 
-					color = handwashing_started)) +
+ggplot(monthly, aes(x = date, y = proportion_deaths, color = handwashing_started)) +
 	geom_line()
 
 # Calcualte mean of proportion before and after handwashing
 monthly_summary <- monthly %>% 
-					group_by(handwashing_started) %>%
-					summarize(mean(proportion_deaths))
-monthly_summary
+	group_by(handwashing_started) %>%
+	summarize(mean(proportion_deaths))
+print(monthly_summary)
