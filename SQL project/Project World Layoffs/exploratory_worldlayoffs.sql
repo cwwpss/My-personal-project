@@ -15,22 +15,24 @@ ORDER BY total_laid_off DESC
 -- Find the total layoff from the company that have highest fund raise
 SELECT *
 FROM layoffs_prep02
-WHERE percentage_laid_off = 1
+WHERE percentage_laid_off = 1 AND total_laid_off IS NOT NULL
 ORDER BY funds_raised_millions DESC
 ;
 
--- Find the overtime layoffs in each company
+-- Find the top 10 overtime layoffs in each company
 SELECT company, SUM(total_laid_off)
 FROM layoffs_prep02
 GROUP BY 1
 ORDER BY 2 DESC
+LIMIT 10
 ;
 
--- Find the overtime layoffs in each industry
+-- Find the top 10 overtime layoffs in each industry
 SELECT industry, SUM(total_laid_off)
 FROM layoffs_prep02
 GROUP BY 1
 ORDER BY 2 DESC
+LIMIT 10
 ;
 
 -- Find the overtime layoffs in each country
@@ -40,11 +42,12 @@ GROUP BY 1
 ORDER BY 2 DESC
 ;
 
--- Find the overtime layoffs in each stage
+-- Find the top 10 overtime layoffs in each stage
 SELECT stage, SUM(total_laid_off)
 FROM layoffs_prep02
 GROUP BY 1
 ORDER BY 2 DESC
+LIMIT 10
 ;
 
 SELECT stage, ROUND(AVG(percentage_laid_off),2)
@@ -97,6 +100,36 @@ SELECT *, total_laid_off/sum_laid_off AS LaidoffsPercentageEachMonth
 FROM cte_sum
 ;
 
+WITH cte_my (`date`, country, total_laid_off) AS
+(
+SELECT `date`, country, SUM(total_laid_off) 
+FROM layoffs_prep02
+GROUP BY 1, 2
+ORDER BY 1 )
+, cte_sum AS
+(
+SELECT *, SUM(total_laid_off) OVER(ORDER BY `date`) AS sum_laid_off
+FROM cte_my )
+SELECT *, total_laid_off/sum_laid_off AS LaidoffsPercentageEachMonth
+FROM cte_sum
+WHERE total_laid_off IS NOT NULL
+;
+
+WITH cte_my (`date`, total_laid_off) AS
+(
+SELECT `date`, SUM(total_laid_off) 
+FROM layoffs_prep02
+GROUP BY 1
+ORDER BY 1 )
+, cte_sum AS
+(
+SELECT *, SUM(total_laid_off) OVER(ORDER BY `date`) AS sum_laid_off
+FROM cte_my )
+SELECT *, total_laid_off/sum_laid_off AS LaidoffsPercentageEachMonth
+FROM cte_sum
+WHERE total_laid_off IS NOT NULL
+;
+
 -- Find top 3 company that highest layyoff employee in each year
 WITH cte_company(company, `year`, total_laid_off) AS 
 (
@@ -111,3 +144,9 @@ FROM cte_rank
 WHERE laidoffs_ranking <= 3
 ORDER BY `year`
 ;
+
+-- Total laidoffs each country
+SELECT country, SUM(total_laid_off)
+FROM layoffs_prep02
+GROUP BY 1
+ORDER BY 2 DESC;
